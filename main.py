@@ -51,17 +51,12 @@ while ret:
                                                    cv2.COLOR_BGR2GRAY)
 
             text = None
+            
+            found_plate = read_license_plate(LICENSE_PLATE_CROP_GRAY)
 
-            formated_plate, unformatted_plate = read_license_plate(
-                LICENSE_PLATE_CROP_GRAY)
-
-            if formated_plate:
-                previous_license_plate = formated_plate
-                text = formated_plate
-
-            elif unformatted_plate:
-                previous_license_plate = unformatted_plate
-                text = unformatted_plate
+            if found_plate:
+                previous_license_plate = found_plate
+                text = found_plate
 
             if text is None:
                 text = previous_license_plate

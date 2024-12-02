@@ -20,7 +20,7 @@ def parse_mercosul_plate(plate):
             s[i] = mercosul_plate_mapping[s[i]]
     return ''.join(s)
 
-def read_license_plate(license_plate_crop):
+def read_license_plate(license_plate_crop) -> str | None:
     """
     Lê o texto de uma imagem de placa veicular e tenta identificar uma placa no formato brasileiro.
 
@@ -41,10 +41,11 @@ def read_license_plate(license_plate_crop):
         _, text, _ = detection
         plate += text.upper().replace(' ', '')
 
-    plate = parse_mercosul_plate()
+    if len(plate[:7]) == 7:
+        plate = parse_mercosul_plate()
 
-    # vê se a placa tem formatação brasileira mercosul,
-    # como: BRA1C23 
-    plate_match = re.search(r'[A-Z]{3}[0-9][A-Z0-9][0-9]{2}', plate)
+        # vê se a placa tem formatação brasileira mercosul,
+        # como: BRA1C23 
+        plate_match = re.search(r'[A-Z]{3}[0-9][A-Z0-9][0-9]{2}', plate)
 
-    return plate_match.group(0) if plate_match is not None else None, plate if len(plate) == 7 else None
+        return plate_match.group(0) if plate_match is not None else plate_match
