@@ -41,13 +41,16 @@ def read_license_plate(license_plate_crop) -> str | None:
         _, text, _ = detection
         plate += text.upper().replace(' ', '')
 
+    # vê se a placa tem formatação brasileira mercosul,
+    # como: BRA1C23 
+    PLATE_MATCH = re.search(r'[A-Z]{3}[0-9][A-Z0-9][0-9]{2}', plate)
+    
+    if PLATE_MATCH is not None:
+        return PLATE_MATCH.group(0)
+    
+    # tenta fazer o parse caso a placa tenha sido detectada
+    # mas não está, em teoria, no padrão mercosul
     if len(plate[:7]) == 7:
-        plate = parse_mercosul_plate()
-
-        # vê se a placa tem formatação brasileira mercosul,
-        # como: BRA1C23 
-        plate_match = re.search(r'[A-Z]{3}[0-9][A-Z0-9][0-9]{2}', plate)
-
-        return plate_match.group(0) if plate_match is not None else plate_match
+        return parse_mercosul_plate(plate)
     
     return None
