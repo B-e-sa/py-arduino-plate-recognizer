@@ -1,12 +1,13 @@
 from ultralytics import YOLO
 import cv2
-import serial
+#import serial
 import time
 from util import read_license_plate
 
 REGISTERED_PLATES = ["RIO9A27"]
 LICENSE_PLATE_DETECTOR = YOLO('license_plate_detector.pt')
 
+"""
 # try catch que garante que a porta do arduíno
 # está ativa e conectada à aplicação
 try:
@@ -22,16 +23,17 @@ try:
 except serial.SerialException as e:
     print(f"Erro na conexão serial: {e}")
     exit(1)
-
+"""
+    
 # cores RGB utilizadas
 RED = (255, 0, 0)
 GREEN = (0, 0, 255)
 
 # após deteção da placa, código não enviará sinais
 # para o arduino, de forma a evitar sobrecargas
-INTERVAL_POST_DETECTION = 5
-in_interval = False
-last_detection_time = time.time()
+#INTERVAL_POST_DETECTION = 5
+#in_interval = False
+#last_detection_time = time.time()
 
 CAP = cv2.VideoCapture(0)
 ret = True
@@ -47,8 +49,8 @@ while ret:
             x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
 
             LICENSE_PLATE_CROP = frame[y1:y2, x1:x2, :]
-            LICENSE_PLATE_CROP_GRAY = cv2.cvtColor(
-                LICENSE_PLATE_CROP, cv2.COLOR_BGR2GRAY)
+            LICENSE_PLATE_CROP_GRAY = cv2.cvtColor(LICENSE_PLATE_CROP, 
+                                                   cv2.COLOR_BGR2GRAY)
 
             text = None
 
@@ -70,22 +72,23 @@ while ret:
             PLACA_CADASTRADA = text in REGISTERED_PLATES
 
             # enviando sinal positivo para leitura do arduíno
-            if PLACA_CADASTRADA:
-                if not in_interval:
-                    ARDUINO_PORT.write(b'1')
-                    in_interval = True
-                    last_detection_time = time.time()
+            #if PLACA_CADASTRADA:
+            #    if not in_interval:
+                    #ARDUINO_PORT.write(b'1')
+                    #in_interval = True
+                    #last_detection_time = time.time()
 
             COR_DETECCAO = GREEN if PLACA_CADASTRADA else RED
 
             cv2.putText(frame, text, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, COR_DETECCAO, 2)
             cv2.rectangle(frame, (x1, y1), (x2, y2), COR_DETECCAO, 1)
 
-        if in_interval and (time.time() - last_detection_time) > INTERVAL_POST_DETECTION:
-            in_interval = False
+        #if in_interval and (time.time() - last_detection_time) > INTERVAL_POST_DETECTION:
+        #    in_interval = False
 
         cv2.imshow('Câmera', frame)
         if (cv2.waitKey(1) & (0xFF == ord('q'))):
             break
+
 CAP.release()
 cv2.destroyAllWindows()
