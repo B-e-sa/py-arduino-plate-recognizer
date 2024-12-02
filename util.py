@@ -49,3 +49,5 @@ def read_license_plate(license_plate_crop) -> str | None:
         plate_match = re.search(r'[A-Z]{3}[0-9][A-Z0-9][0-9]{2}', plate)
 
         return plate_match.group(0) if plate_match is not None else plate_match
+    
+    return None
